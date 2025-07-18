@@ -16,6 +16,6 @@ app.get('/', (_, res) => res.send('API is running'));
 
 connectDB().then(() => {
   app.listen(PORT, () =>
-    console.log(`🚀 Server up on port ${PORT}`)
+    console.log(`🚀 Server up on this port ${PORT}`)
   );
 });
