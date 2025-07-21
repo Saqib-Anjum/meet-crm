@@ -9,6 +9,8 @@ import DashboardLayout from './pages/DashboardLayout';
 import User from './pages/User';
 import DashboardPage from './pages/DashboardPage';
 import UsersDetail from './pages/UsersDetail';
+import MeetPage from './pages/MeetPage';
+import RecordingsList from './pages/RecordingsList';
 
 const router = createHashRouter([
   {
@@ -31,6 +33,15 @@ const router = createHashRouter([
         path: "/users-detail",
         element: <UsersDetail />,
       },
+      {
+        path: "/meet",
+        element: <MeetPage />,
+      },
+       {
+        path: "/record",
+        element: <RecordingsList />,
+      },
+      
     ]}
   // {
   //   path: "/signup",
