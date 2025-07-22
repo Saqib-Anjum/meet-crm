@@ -12,7 +12,8 @@ import path from 'path';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import dayjs from 'dayjs';
-
+import minMax from 'dayjs/plugin/minMax.js';
+dayjs.extend(minMax);
 
 dotenv.config();
 const app = express();

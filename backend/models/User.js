@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   dob:         { type: Date },
   gender:      { type: String,  enum: ['Male','Female','Other'], default: 'Other' },
   city:        { type: String,  trim: true },
-  country:     { type: String,  trim: true },
+  Insurance:     { type: String,  trim: true },
   therapy:     { type: String,  trim: true },
   therapyDate: { type: Date },
   createdAt:   { type: Date,    default: Date.now }

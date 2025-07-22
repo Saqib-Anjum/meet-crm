@@ -1,7 +1,6 @@
  import React from 'react';
 import './App.css'
 import { createHashRouter } from "react-router-dom";
-import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import PublicRoute from './components/ProtectedRoute/PublicRoute';
 import Login from './components/Auth/Login';
@@ -38,7 +37,7 @@ const router = createHashRouter([
         element: <MeetPage />,
       },
        {
-        path: "/record",
+        path: "/transcript-record",
         element: <RecordingsList />,
       },
       

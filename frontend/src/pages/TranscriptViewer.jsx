@@ -97,6 +97,7 @@ export default function TranscriptViewer({ meetingId }) {
   return (
     <div>
       <h2>Transcript for Meeting {meetingId}</h2>
+      <p>Now add a button to show the transcript of recording, do you understand? </p>
       {transcriptLines.map((line, idx) => (
         <p key={idx}>{line}</p>
       ))}

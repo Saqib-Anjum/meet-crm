@@ -10,6 +10,7 @@ import {
 import { PiFolderUser } from "react-icons/pi";
 import { FaUserTie } from "react-icons/fa6";
 import { IoHomeOutline } from "react-icons/io5";
+import { CgTranscript } from "react-icons/cg";
 
 const icons = [
   HiOutlineComputerDesktop,
@@ -35,6 +36,11 @@ function Sidebar() {
   window.location.href = "/#users-detail"
   }
 
+  const Transcript = function record() {
+  window.location.href = "/#transcript-record"
+  }
+
+
 
   return (
     <aside className="w-20 bg-[#3A6882] text-white flex flex-col items-center py-6 space-y-6">
@@ -43,8 +49,8 @@ function Sidebar() {
         <Icon key={idx} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       ))} */}
       <IoHomeOutline onClick={homeNavigate} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
-      {/* <FaUserTie onClick={AddUserDetial} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" /> */}
       <PiFolderUser onClick={UsersDetial} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
+      <CgTranscript onClick={Transcript} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       <HiOutlineArrowLeftOnRectangle onClick={log} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
     </aside>
   );
