@@ -232,7 +232,7 @@ const UsersDetail = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3060/users/get");
+      const response = await axios.get("https://meet.airx.ac/users/get");
       setUserData(response.data);
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -250,7 +250,7 @@ const UsersDetail = () => {
 const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try {
-      await axios.delete(`http://localhost:3060/users/delete/${id}`);
+      await axios.delete(`https://meet.airx.ac/users/delete/${id}`);
       fetchUsers();
     } catch {
       setError('Failed to delete user');
@@ -274,9 +274,9 @@ const handleDelete = async (id) => {
   const handleSave = async (data) => {
     try {
       if (data._id) {
-        await axios.put(`http://localhost:3060/users/update/${data._id}`, data);
+        await axios.put(`https://meet.airx.ac/users/update/${data._id}`, data);
       } else {
-        await axios.post("http://localhost:3060/users", data);
+        await axios.post("https://meet.airx.ac/users", data);
       }
       setShowForm(false);
       fetchUsers();

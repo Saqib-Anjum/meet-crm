@@ -10,6 +10,8 @@ import DashboardPage from './pages/DashboardPage';
 import UsersDetail from './pages/UsersDetail';
 import MeetPage from './pages/MeetPage';
 import RecordingsList from './pages/RecordingsList';
+import Zoom from './pages/Zoom';
+import ZoomLaunchButton from './pages/ZoomLaunchButton';
 
 const router = createHashRouter([
   {
@@ -40,7 +42,14 @@ const router = createHashRouter([
         path: "/transcript-record",
         element: <RecordingsList />,
       },
-      
+      {
+        path: "/zoom",
+        element: <Zoom />,
+      },
+        {
+        path: "/zooms",
+        element: <ZoomLaunchButton />,
+      },
     ]}
   // {
   //   path: "/signup",

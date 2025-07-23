@@ -11,6 +11,7 @@ import { PiFolderUser } from "react-icons/pi";
 import { FaUserTie } from "react-icons/fa6";
 import { IoHomeOutline } from "react-icons/io5";
 import { CgTranscript } from "react-icons/cg";
+import { SlCamrecorder } from "react-icons/sl";
 
 const icons = [
   HiOutlineComputerDesktop,
@@ -39,7 +40,9 @@ function Sidebar() {
   const Transcript = function record() {
   window.location.href = "/#transcript-record"
   }
-
+const Zoom = function zoom() {
+  window.location.href = "/#zoom"
+  }
 
 
   return (
@@ -51,6 +54,7 @@ function Sidebar() {
       <IoHomeOutline onClick={homeNavigate} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       <PiFolderUser onClick={UsersDetial} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       <CgTranscript onClick={Transcript} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
+      <SlCamrecorder onClick={Zoom} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       <HiOutlineArrowLeftOnRectangle onClick={log} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
     </aside>
   );

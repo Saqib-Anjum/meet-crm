@@ -165,7 +165,7 @@ export default function RecordingsList() {
   useEffect(() => {
     async function load() {
       try {
-        const { data } = await axios.get('http://localhost:3060/api/recordings');
+        const { data } = await axios.get('https://meet.airx.ac/api/recordings');
         setRecordings(data.recordings);
       } catch (err) {
         setError('Could not load recordings.');
@@ -183,7 +183,7 @@ export default function RecordingsList() {
 
     setLoadingTranscript(true);
     setTranscriptError('');
-    axios.get(`http://localhost:3060/api/meetings/${activeMeetingId}/transcript`)
+    axios.get(`https://meet.airx.ac/api/meetings/${activeMeetingId}/transcript`)
       .then(res => {
         const vttText = res.data;
         const blocks = vttText.trim().split(/\r?\n\r?\n/).slice(1);
@@ -204,21 +204,19 @@ export default function RecordingsList() {
       });
   }, [activeMeetingId]);
 
-  if (loading) return <p>Loading Transcripts…</p>;
-  if (error)   return <p style={{ color: 'red' }}>{error}</p>;
-  if (!recordings.length) return <p>No Transcript found.</p>;
+  // if (loading) return <p>Loading Transcripts…</p>;
+  // if (error)   return <p style={{ color: 'red' }}>{error}</p>;
+  // if (!recordings.length) return <p>No Transcript found.</p>;
 
   return (
     <div>
-      <h2 className=''>All Zoom Recordings</h2>
+      <h2 className=''>Coming Soon Zoom Recordings</h2>
       <ul>
-        {recordings.map((m) => (
+        {/* {recordings.map((m) => (
           <li key={m.uuid} style={{ marginBottom: '1em' }}>
             <strong>{m.topic}</strong> — {new Date(m.start_time).toLocaleString()}
             <br />
-            {/* <a href={m.recording_files?.[0]?.download_url} target="_blank" rel="noopener noreferrer">
-              ▶ Download
-            </a> */}
+  
             {' '}
             <button
               onClick={() => setActiveMeetingId(m.uuid)}
@@ -230,7 +228,6 @@ export default function RecordingsList() {
               <div style={{ marginTop: '0.5em', paddingLeft: '1em', borderLeft: '2px solid #ddd' }}>
                 <h3>Transcript</h3>
                 {loadingTranscript && <p>Loading transcript…</p>}
-                {/* {transcriptError && <p style={{ color: 'red' }}>Error: {transcriptError}</p>} */}
                 {!loadingTranscript && !transcriptError && transcriptLines.length === 0 && (
                   <p>No transcript available.</p>
                 )}
@@ -240,7 +237,7 @@ export default function RecordingsList() {
               </div>
             )}
           </li>
-        ))}
+        ))} */}
       </ul>
     </div>
   );
