@@ -205,14 +205,20 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import axios from 'axios';
-import dayjs from 'dayjs';
-import minMax from 'dayjs/plugin/minMax.js';
-
+// import dayjs from 'dayjs';
+// import minMax from 'dayjs/plugin/minMax.js';
+// import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import usersRouter from './routes/users.js';
 import { connectDB } from './db.js';
+import { userSignup, signin } from './controllers/auth.js';
 
+const app = express();
+app.use(express.json());
+app.use(cors());
 dotenv.config();
-dayjs.extend(minMax);
+
+// dayjs.extend(minMax);
 
 const {
   ZOOM_CLIENT_ID,
@@ -227,10 +233,6 @@ if (!ZOOM_CLIENT_ID || !ZOOM_CLIENT_SECRET || !ZOOM_ACCOUNT_ID || !ZOOM_USER_ID)
   console.error('Missing one or more ZOOM_… environment variables.');
   process.exit(1);
 }
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 
 // serve your React build or any other static files here if needed
 // app.use(express.static(path.join(process.cwd(), 'client', 'build')));
@@ -258,128 +260,162 @@ async function getZoomAccessToken() {
   return resp.data.access_token;
 }
 
-app.get('/api/meetings/:meetingId/transcript', async (req, res) => {
-  try {
-    const { meetingId } = req.params;
-    const token = await getZoomAccessToken();
+// app.get('/api/meetings/:meetingId/transcript', async (req, res) => {
+//   try {
+//     const { meetingId } = req.params;
+//     const token = await getZoomAccessToken();
 
-    // fetch recordings metadata
-    const recRes = await axios.get(
-      `https://api.zoom.us/v2/meetings/${meetingId}/recordings`,
+//     // fetch recordings metadata
+//     const recRes = await axios.get(
+//       `https://api.zoom.us/v2/meetings/${meetingId}/recordings`,
+//       { headers: { Authorization: `Bearer ${token}` } }
+//     );
+
+//     const vttFile = recRes.data.recording_files.find(
+//       f => f.file_extension === 'vtt' || f.file_type === 'TRANSCRIPT'
+//     );
+//     if (!vttFile) {
+//       return res.status(404).json({ error: 'No transcript found' });
+//     }
+
+//     // stream transcript back
+//     const transcriptStream = await axios.get(vttFile.download_url, {
+//       headers: { Authorization: `Bearer ${token}` },
+//       responseType: 'stream'
+//     });
+//     res.setHeader('Content-Type', 'text/vtt');
+//     transcriptStream.data.pipe(res);
+
+//   } catch (err) {
+//     console.error(err.response?.data || err);
+//     res.status(err.response?.status || 500)
+//        .json({ error: err.message || 'Transcript fetch failed' });
+//   }
+// });
+
+// const MAX_DAYS_PER_CHUNK = 90;
+
+// async function fetchRecordingsInRange(from, to, pageToken = '') {
+//   const token = await getZoomAccessToken();
+//   const res = await axios.get(
+//     `https://api.zoom.us/v2/users/${ZOOM_USER_ID}/recordings`,
+//     {
+//       headers: { Authorization: `Bearer ${token}` },
+//       params: {
+//         from,
+//         to,
+//         page_size: 300,
+//         next_page_token: pageToken
+//       }
+//     }
+//   );
+//   return {
+//     meetings: res.data.meetings,
+//     next_page_token: res.data.next_page_token
+//   };
+// }
+
+// async function fetchAllRecordings() {
+//   const all = [];
+//   let start = dayjs().subtract(5, 'year').startOf('day');
+//   const end = dayjs().endOf('day');
+
+//   while (start.isBefore(end)) {
+//     const chunkEnd = dayjs.min(start.add(MAX_DAYS_PER_CHUNK, 'day'), end);
+//     const from = start.format('YYYY-MM-DD');
+//     const to = chunkEnd.format('YYYY-MM-DD');
+//     console.log(`Fetching recordings from ${from} to ${to}`);
+
+//     let token = '';
+//     do {
+//       const { meetings, next_page_token } =
+//         await fetchRecordingsInRange(from, to, token);
+//       all.push(...meetings);
+//       token = next_page_token;
+//     } while (token);
+
+//     start = chunkEnd.add(1, 'day');
+//   }
+
+//   return all;
+// }
+
+// app.get('/api/recordings', async (_req, res) => {
+//   try {
+//     const recordings = await fetchAllRecordings();
+//     res.json({ total: recordings.length, recordings });
+//   } catch (err) {
+//     console.error('Error fetching recordings:', err);
+//     res.status(500).json({ error: 'Failed to fetch recordings' });
+//   }
+// });
+
+
+
+      
+    // const token = await getZoomAccessToken();
+
+// app.get('/api/zoom/scheduler/events', async (req, res) => {
+//   try {
+//     const token = generateJWT();
+
+//     const { data } = await axios.get('https://api.zoom.us/v2/scheduler/events', {
+//       headers: {
+//         Authorization: `Bearer ${token}`
+//       }
+//     });
+
+//     res.json(data);
+//   } catch (error) {
+//     console.error(error.response?.data || error.message);
+//     res.status(500).json({ error: 'Failed to fetch scheduler events' });
+//   }
+// });
+
+
+
+
+
+
+
+function generateZoomJWT() {
+  return jwt.sign(
+    { iss: ZOOM_CLIENT_ID, exp: Math.floor(Date.now() / 1000) + 60 },
+    ZOOM_CLIENT_SECRET,
+    { algorithm: 'HS256' }
+  );
+}
+
+// Proxy endpoint to list meetings for a user
+app.get('/api/zoom/users/:userId/meetings', async (req, res) => {
+  const userId = 'p4g9vtbHS8K5vh2ZAA7r9w';
+  const token = generateZoomJWT();
+
+  try {
+    const response = await axios.get(
+      `https://api.zoom.us/v2/users/${userId}/meetings`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-
-    const vttFile = recRes.data.recording_files.find(
-      f => f.file_extension === 'vtt' || f.file_type === 'TRANSCRIPT'
-    );
-    if (!vttFile) {
-      return res.status(404).json({ error: 'No transcript found' });
-    }
-
-    // stream transcript back
-    const transcriptStream = await axios.get(vttFile.download_url, {
-      headers: { Authorization: `Bearer ${token}` },
-      responseType: 'stream'
-    });
-    res.setHeader('Content-Type', 'text/vtt');
-    transcriptStream.data.pipe(res);
-
+    res.json(response.data);
   } catch (err) {
-    console.error(err.response?.data || err);
-    res.status(err.response?.status || 500)
-       .json({ error: err.message || 'Transcript fetch failed' });
-  }
-});
-
-const MAX_DAYS_PER_CHUNK = 90;
-
-async function fetchRecordingsInRange(from, to, pageToken = '') {
-  const token = await getZoomAccessToken();
-  const res = await axios.get(
-    `https://api.zoom.us/v2/users/${ZOOM_USER_ID}/recordings`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: {
-        from,
-        to,
-        page_size: 300,
-        next_page_token: pageToken
-      }
-    }
-  );
-  return {
-    meetings: res.data.meetings,
-    next_page_token: res.data.next_page_token
-  };
-}
-
-async function fetchAllRecordings() {
-  const all = [];
-  let start = dayjs().subtract(5, 'year').startOf('day');
-  const end = dayjs().endOf('day');
-
-  while (start.isBefore(end)) {
-    const chunkEnd = dayjs.min(start.add(MAX_DAYS_PER_CHUNK, 'day'), end);
-    const from = start.format('YYYY-MM-DD');
-    const to = chunkEnd.format('YYYY-MM-DD');
-    console.log(`Fetching recordings from ${from} to ${to}`);
-
-    let token = '';
-    do {
-      const { meetings, next_page_token } =
-        await fetchRecordingsInRange(from, to, token);
-      all.push(...meetings);
-      token = next_page_token;
-    } while (token);
-
-    start = chunkEnd.add(1, 'day');
-  }
-
-  return all;
-}
-
-app.get('/api/recordings', async (_req, res) => {
-  try {
-    const recordings = await fetchAllRecordings();
-    res.json({ total: recordings.length, recordings });
-  } catch (err) {
-    console.error('Error fetching recordings:', err);
-    res.status(500).json({ error: 'Failed to fetch recordings' });
+    console.error('Zoom API error:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to fetch meetings' });
   }
 });
 
 
 
-function generateSignature(meetingNumber, role) {
-  const iat = Math.floor(Date.now() / 1000) - 30;
-  const exp = iat + 60 * 60 * 2; // 2 hrs
 
-  const payload = {
-    appKey: ZOOM_CLIENT_ID,
-    sdkKey: ZOOM_CLIENT_ID,
-    mn: meetingNumber,
-    role,
-    iat,
-    exp,
-    tokenExp: exp
-  };
 
-  return jwt.sign(payload, ZOOM_CLIENT_SECRET, { algorithm: 'HS256' });
-}
 
-app.post('/api/zoom/signature', (req, res) => {
-  const { meetingNumber, role } = req.body;
-  if (!meetingNumber || role === undefined) {
-    return res.status(400).json({ error: 'meetingNumber and role are required' });
-  }
-  try {
-    const signature = generateSignature(meetingNumber, role);
-    res.json({ signature });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Failed to generate signature' });
-  }
-});
+
+
+
+app.post('/signin', signin)
+app.post('/signup', userSignup)
+
+
+
 
 connectDB()
   .then(() => {

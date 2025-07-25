@@ -12,6 +12,7 @@ import { FaUserTie } from "react-icons/fa6";
 import { IoHomeOutline } from "react-icons/io5";
 import { CgTranscript } from "react-icons/cg";
 import { SlCamrecorder } from "react-icons/sl";
+import { logout } from './Redux/Slices/AuthSlices';
 
 const icons = [
   HiOutlineComputerDesktop,
@@ -23,7 +24,7 @@ const icons = [
 function Sidebar() {
 
   const homeNavigate = function home() {
-  window.location.href = "/"
+  window.location.href = "#/"
   }
   const log = function logOut() {
   window.location.href = "/#login"
@@ -44,6 +45,11 @@ const Zoom = function zoom() {
   window.location.href = "/#zoom"
   }
 
+  const handleLogout = () => {
+  logout();
+  navigate('/login');
+};
+
 
   return (
     <aside className="w-20 bg-[#3A6882] text-white flex flex-col items-center py-6 space-y-6">
@@ -55,7 +61,7 @@ const Zoom = function zoom() {
       <PiFolderUser onClick={UsersDetial} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       <CgTranscript onClick={Transcript} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
       <SlCamrecorder onClick={Zoom} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
-      <HiOutlineArrowLeftOnRectangle onClick={log} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
+      <HiOutlineArrowLeftOnRectangle onClick={handleLogout} className="h-6 w-6 hover:text-yellow-400 cursor-pointer" />
     </aside>
   );
 }

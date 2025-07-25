@@ -12,23 +12,30 @@ import MeetPage from './pages/MeetPage';
 import RecordingsList from './pages/RecordingsList';
 import Zoom from './pages/Zoom';
 import ZoomLaunchButton from './pages/ZoomLaunchButton';
+import MeetingList from './pages/MeetingList';
+// import GoogleCalendar from './pages/GoogleCalendar';
+// import OAuthCallback from './components/Google/OAuthCallback';
+// import Google from './components/Google/Google';
+import GoogleCalendar from './components/Google/GoogleCalendar';
 
 const router = createHashRouter([
   {
     path: "/login",
-    element:  <Login /> ,
+    element: <PublicRoute> <Login /> </PublicRoute>,
   },
   {
     path: "/",
-    element: <DashboardLayout />,
+    element: <DashboardLayout /> ,
+        // element: <ProtectedRoute> <DashboardLayout /> </ProtectedRoute>,
+
     children: [
       {
         path: "/user",
-        element: <User />,
+        element: (<ProtectedRoute> <User /> </ProtectedRoute>),
       },
       {
         path: "/",
-        element: <DashboardPage />,
+        element: (<ProtectedRoute> <DashboardPage /> </ProtectedRoute>),
       },
       {
         path: "/users-detail",
@@ -50,6 +57,19 @@ const router = createHashRouter([
         path: "/zooms",
         element: <ZoomLaunchButton />,
       },
+      {
+        path: "/meets",
+        element: <MeetingList  />,
+      },
+      // {
+      //   path: "/google-calendar",
+      //   element: <GoogleCalendar  />,
+      // },
+      {
+        path: "/google",
+        element: <GoogleCalendar  />,
+      },
+
     ]}
   // {
   //   path: "/signup",

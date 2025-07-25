@@ -165,7 +165,7 @@ export default function RecordingsList() {
   useEffect(() => {
     async function load() {
       try {
-        const { data } = await axios.get('https://meet.airx.ac/api/recordings');
+        const { data } = await axios.get('http://localhost:3060/api/recordings');
         setRecordings(data.recordings);
       } catch (err) {
         setError('Could not load recordings.');
@@ -183,7 +183,7 @@ export default function RecordingsList() {
 
     setLoadingTranscript(true);
     setTranscriptError('');
-    axios.get(`https://meet.airx.ac/api/meetings/${activeMeetingId}/transcript`)
+    axios.get(`http://localhost:3060/api/meetings/${activeMeetingId}/transcript`)
       .then(res => {
         const vttText = res.data;
         const blocks = vttText.trim().split(/\r?\n\r?\n/).slice(1);
@@ -204,15 +204,15 @@ export default function RecordingsList() {
       });
   }, [activeMeetingId]);
 
-  // if (loading) return <p>Loading Transcripts…</p>;
-  // if (error)   return <p style={{ color: 'red' }}>{error}</p>;
-  // if (!recordings.length) return <p>No Transcript found.</p>;
+  if (loading) return <p>Loading Transcripts…</p>;
+  if (error)   return <p style={{ color: 'red' }}>{error}</p>;
+  if (!recordings.length) return <p>No Transcript found.</p>;
 
   return (
     <div>
       <h2 className=''>Coming Soon Zoom Recordings</h2>
       <ul>
-        {/* {recordings.map((m) => (
+        {recordings.map((m) => (
           <li key={m.uuid} style={{ marginBottom: '1em' }}>
             <strong>{m.topic}</strong> — {new Date(m.start_time).toLocaleString()}
             <br />
@@ -237,7 +237,7 @@ export default function RecordingsList() {
               </div>
             )}
           </li>
-        ))} */}
+        ))}
       </ul>
     </div>
   );
