@@ -1,11 +1,26 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { differenceInHours, parseISO } from 'date-fns';
 
+// Utility functions
+const formatDate = (isoString) => {
+  // Safely format a date string to YYYY-MM-DD
+  return isoString?.split('T')?.[0] || '';
+};
 
-const UserForm = ({ initialData = {}, onSave, onCancel }) => {
+const getHoursSince = (isoString) => {
+  if (typeof isoString !== 'string') return Infinity;
+  try {
+    return differenceInHours(new Date(), parseISO(isoString));
+  } catch {
+    return Infinity;
+  }
+};
+
+// UserForm component for adding/editing users
+export const UserForm = ({ initialData = {}, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -19,18 +34,10 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
     ...initialData,
   });
 
-
   const formatLabel = (key) =>
-  key
-    .replace(/([A-Z])/g, " $1")       // insert space before capital letters
-    .replace(/^./, (str) => str.toUpperCase());
-
-
-    const formatDate = (isoString) => {
-  if (!isoString) return '';
-  return isoString.slice(0, 10);
-};
-
+    key
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,11 +56,11 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
         className="bg-white p-6 rounded-lg w-full max-w-md max-h-full overflow-y-auto"
       >
         <h3 className="text-xl font-bold mb-4">
-          {initialData._id ? "Edit User" : "Add New User"}
+          {initialData._id ? "Edit Patient" : "Add New Patient"}
         </h3>
 
-        {/* Full Name, Phone, Email, City, Insurance */}
-        {['fullName', 'phoneNumber', 'email', 'city'].map((key) => (
+        {/* Basic Fields */}
+        {[ 'fullName', 'phoneNumber', 'email', 'city' ].map((key) => (
           <div className="mb-3" key={key}>
             <label className="block text-sm font-medium text-gray-700">
               {formatLabel(key)}
@@ -61,21 +68,22 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
             <input
               type="text"
               name={key}
-              value={formData[key]}
+              value={formData[key] || ''}
               onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
             />
           </div>
         ))}
 
-          <div className="mb-3">
+        {/* Insurance */}
+        <div className="mb-3">
           <label className="block text-sm font-medium text-gray-700">Insurance</label>
           <select
             name="insurance"
-            value={formData.insurance}
+            value={formData.insurance || ''}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white"
-          >            
+          >
             <option value="">Select Option</option>
             <option value="Insurance">Insurance</option>
             <option value="Self Pay">Self Pay</option>
@@ -88,7 +96,7 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
           <input
             type="date"
             name="dob"
-            value={formData.dob || ''}
+            value={formatDate(formData.dob)}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
           />
@@ -110,15 +118,14 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
           </select>
         </div>
 
-        {/* Therapy Type */}
+        {/* Therapy */}
         <div className="mb-3">
           <label className="block text-sm font-medium text-gray-700">Therapy Type</label>
           <select
             name="therapy"
-            value={formData.therapy}
+            value={formData.therapy || ''}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white"
-
           >
             <option value="">Select Option</option>
             <option value="Individual Therapy">Individual Therapy</option>
@@ -137,7 +144,7 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
           <input
             type="date"
             name="therapyDate"
-            value={formData.therapyDate || ''}
+            value={formatDate(formData.therapyDate)}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
           />
@@ -159,8 +166,8 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
   );
 };
 
-
-const UsersDetail = () => {
+// Main PatientDetails component
+const PatientDetails = () => {
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -170,8 +177,10 @@ const UsersDetail = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://crm.airx.ac/users/get");
-      setUserData(response.data);
+      const response = await axios.get("https://crm.airx.ac/patients");
+      console.log(response)
+      // ensure array
+      setUserData(response.data.users);
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Failed to load user data");
@@ -180,24 +189,20 @@ const UsersDetail = () => {
     }
   };
 
-  const formatDate = (isoString) => {
-  if (!isoString) return '';
-  return isoString.slice(0, 10);
-};
-
-const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    try {
-      await axios.delete(`https://crm.airx.ac/users/delete/${id}`);
-      fetchUsers();
-    } catch {
-      setError('Failed to delete user');
-    }
-  };
-
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this patient?')) return;
+    try {
+      await axios.delete(`https://crm.airx.ac/del-patient/${id}`);
+      fetchUsers();
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      setError('Failed to delete patient');
+    }
+  };
 
   const handleAdd = () => {
     setEditUser(null);
@@ -212,51 +217,48 @@ const handleDelete = async (id) => {
   const handleSave = async (data) => {
     try {
       if (data._id) {
-        await axios.put(`https://crm.airx.ac/users/update/${data._id}`, data);
+        await axios.put(`https://crm.airx.ac/update-patient/${data._id}`, data);
       } else {
-        await axios.post("https://crm.airx.ac/users", data);
+        await axios.post("https://crm.airx.ac/add-patient", data);
       }
       setShowForm(false);
       fetchUsers();
     } catch (err) {
-      console.error("Error saving user:", err);
-      setError("Failed to save user data");
+      console.error("Error saving patient:", err);
+      setError("Failed to save patient data");
     }
   };
 
+  const handleCancel = () => setShowForm(false);
+
+  // Prepare sorted data
   const sortedData = [...userData].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-  const handleCancel = () => {
-    setShowForm(false);
-  };
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  if (error) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg">
+        ❌ {error}
       </div>
-    );
+    </div>
+  );
 
-  if (error)
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg">
-          ❌ {error}
-        </div>
-      </div>
-    );
-
-     return (
+  return (
     <div className="mx-auto py-10 px-4">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">Leads</h2>
+        <h2 className="text-3xl font-bold">Patients</h2>
         <button
           onClick={handleAdd}
           className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition"
         >
-          Add Lead
+          Add Patient
         </button>
       </div>
 
@@ -265,13 +267,13 @@ const handleDelete = async (id) => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {sortedData.map((user) => {
-            const hoursSince = differenceInHours(new Date(), parseISO(user.createdAt));
+            const hoursSince = getHoursSince(user.createdAt);
             const isNew = hoursSince < 48;
 
             return (
               <div
                 key={user._id}
-                className="bg-white shadow-lg border border-gray-200 rounded-lg p-5 hover:shadow-xl transition relative"
+                className="relative bg-white p-5 rounded-lg shadow hover:shadow-xl transition"
               >
                 {isNew && (
                   <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
@@ -290,33 +292,15 @@ const handleDelete = async (id) => {
                 >
                   <RiDeleteBin6Fill size={20} />
                 </button>
-                <p className="text-gray-700 mt-4">
-                  <strong>Full Name:</strong> {user.fullName}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Phone Number:</strong> {user.phoneNumber}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Email:</strong> {user.email}
-                </p>
-                <p className="text-gray-700">
-                  <strong>DOB:</strong> {formatDate(user.dob)}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Gender:</strong> {user.gender}
-                </p>
-                <p className="text-gray-700">
-                  <strong>City:</strong> {user.city}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Insurance:</strong> {user.insurance}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Therapy:</strong> {user.therapy}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Therapy Date:</strong> {formatDate(user.therapyDate)}
-                </p>
+                <p className="text-gray-700 mt-4"><strong>Full Name:</strong> {user.fullName}</p>
+                <p className="text-gray-700"><strong>Phone:</strong> {user.phoneNumber}</p>
+                <p className="text-gray-700"><strong>Email:</strong> {user.email}</p>
+                <p className="text-gray-700"><strong>DOB:</strong> {formatDate(user.dob)}</p>
+                <p className="text-gray-700"><strong>Gender:</strong> {user.gender}</p>
+                <p className="text-gray-700"><strong>City:</strong> {user.city}</p>
+                <p className="text-gray-700"><strong>Insurance:</strong> {user.insurance}</p>
+                <p className="text-gray-700"><strong>Therapy:</strong> {user.therapy}</p>
+                <p className="text-gray-700"><strong>Therapy Date:</strong> {formatDate(user.therapyDate)}</p>
               </div>
             );
           })}
@@ -332,58 +316,6 @@ const handleDelete = async (id) => {
       )}
     </div>
   );
-  //   <div className="mx-auto py-10 px-4">
-  //     <div className="flex justify-between items-center mb-6">
-  //       <h2 className="text-3xl font-bold">Patients Data</h2>
-  //       <button
-  //         onClick={handleAdd}
-  //         className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition"
-  //       >
-  //         Add Patient
-  //       </button>
-  //     </div>
-
-  //     {userData.length === 0 ? (
-  //       <p className="text-center text-gray-500">No Data found</p>
-  //     ) : (
-  //       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-  //         {userData.map((user) => (
-  //           <div
-  //             key={user._id}
-  //             className="bg-white shadow-lg border border-gray-200 rounded-lg p-5 hover:shadow-xl transition relative"
-  //           >
-  //             <button
-  //               onClick={() => handleEdit(user)}
-  //               className="absolute top-2 right-12 text-blue-500 hover:text-blue-700"
-  //             >
-  //               <FaEdit  size={20} />
-  //             </button>
-  //             <button onClick={() => handleDelete(user._id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">
-  //               <RiDeleteBin6Fill size={20} />
-  //               </button>
-  //             <p className="text-gray-700"><strong>Full Name:</strong> {user.fullName}</p>
-  //             <p className="text-gray-700"><strong>Phone Number:</strong> {user.phoneNumber}</p>
-  //             <p className="text-gray-700"><strong>Email:</strong> {user.email}</p>
-  //             <p className="text-gray-700"><strong>DOB:</strong> {formatDate(user.dob)}</p>
-  //             <p className="text-gray-700"><strong>Gender:</strong> {user.gender}</p>
-  //             <p className="text-gray-700"><strong>City:</strong> {user.city}</p>
-  //             <p className="text-gray-700"><strong>Insurance:</strong> {user.insurance}</p>
-  //             <p className="text-gray-700"><strong>Therapy:</strong> {user.therapy}</p>
-  //             <p className="text-gray-700"><strong>Therapy Date:</strong> {formatDate(user.therapyDate)}</p>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     )}
-
-  //     {showForm && (
-  //       <UserForm
-  //         initialData={editUser || {}}
-  //         onSave={handleSave}
-  //         onCancel={handleCancel}
-  //       />
-  //     )}
-  //   </div>
-  // );
 };
 
-export default UsersDetail;
+export default PatientDetails;

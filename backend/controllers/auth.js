@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin.js';
 import bcrypt from 'bcrypt';
 
+const JWT_SECRET = "ses-key-aoc";
+
 export const userSignup = async (req, res) => {
   try {
     const { fullName, email, password, confirmPassword } = req.body;
@@ -48,8 +50,8 @@ export const signin = async (req, res) => {
 
     // payload for JWT
     const tokenPayload = { id: user._id, email: user.email };
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
-      expiresIn: '7d',
+    const token = jwt.sign(tokenPayload, JWT_SECRET, {
+      expiresIn: '30d',
       algorithm: 'HS256'
     });
 

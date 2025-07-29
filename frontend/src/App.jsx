@@ -8,15 +8,7 @@ import DashboardLayout from './pages/DashboardLayout';
 import User from './pages/User';
 import DashboardPage from './pages/DashboardPage';
 import UsersDetail from './pages/UsersDetail';
-import MeetPage from './pages/MeetPage';
-import RecordingsList from './pages/RecordingsList';
-import Zoom from './pages/Zoom';
-import ZoomLaunchButton from './pages/ZoomLaunchButton';
-import MeetingList from './pages/MeetingList';
-// import GoogleCalendar from './pages/GoogleCalendar';
-// import OAuthCallback from './components/Google/OAuthCallback';
-// import Google from './components/Google/Google';
-import GoogleCalendar from './components/Google/GoogleCalendar';
+import PatientDetails from './pages/patientDetails';
 
 const router = createHashRouter([
   {
@@ -39,55 +31,14 @@ const router = createHashRouter([
       },
       {
         path: "/users-detail",
-        element: <UsersDetail />,
+        element: (<ProtectedRoute> <UsersDetail /> </ProtectedRoute>),
       },
       {
-        path: "/meet",
-        element: <MeetPage />,
-      },
-       {
-        path: "/transcript-record",
-        element: <RecordingsList />,
-      },
-      {
-        path: "/zoom",
-        element: <Zoom />,
-      },
-        {
-        path: "/zooms",
-        element: <ZoomLaunchButton />,
-      },
-      {
-        path: "/meets",
-        element: <MeetingList  />,
-      },
-      // {
-      //   path: "/google-calendar",
-      //   element: <GoogleCalendar  />,
-      // },
-      {
-        path: "/google",
-        element: <GoogleCalendar  />,
+        path: "/patient-detail",
+        element: (<ProtectedRoute> <PatientDetails /> </ProtectedRoute>),
       },
 
     ]}
-  // {
-  //   path: "/signup",
-  //   element: <PublicRoute> <SignupForm /> </PublicRoute>,
-  // },
-  // {
-  //   path: "/forget-password",
-  //   element: <PublicRoute> <ForgetPassword /> </PublicRoute>,
-  // },
-  // {
-  //   path: "/verify-otp",
-  //   element: <PublicRoute> <VerifyOtp /> </PublicRoute>,
-  // },
-  // {
-  //   path: "/change-password",
-  //   element: <PublicRoute> <ChangePassword /> </PublicRoute>,
-  // },
-
   
   
 ]);
