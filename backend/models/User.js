@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   insurance:     { type: String,  trim: true },
   therapy:     { type: String,  trim: true },
   therapyDate: { type: Date },
+  comment:     { type: String},
   createdAt:   { type: Date,    default: Date.now }
 });
 

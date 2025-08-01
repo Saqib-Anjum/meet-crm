@@ -16,6 +16,7 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
     insurance: "",
     therapy: "",
     therapyDate: "",
+    comment: "",
     ...initialData,
   });
 
@@ -138,6 +139,18 @@ const UserForm = ({ initialData = {}, onSave, onCancel }) => {
             type="date"
             name="therapyDate"
             value={formData.therapyDate || ''}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+          />
+        </div>
+
+
+          <div className="mb-3">
+          <label className="block text-sm font-medium text-gray-700">Comment</label>
+          <input
+            type="text"
+            name="comment"
+            value={formData.comment}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
           />
@@ -317,6 +330,9 @@ const handleDelete = async (id) => {
                 <p className="text-gray-700">
                   <strong>Therapy Date:</strong> {formatDate(user.therapyDate)}
                 </p>
+                <p className="text-gray-700">
+                  <strong>Comment:</strong> {user.comment}
+                </p>
               </div>
             );
           })}
@@ -332,58 +348,7 @@ const handleDelete = async (id) => {
       )}
     </div>
   );
-  //   <div className="mx-auto py-10 px-4">
-  //     <div className="flex justify-between items-center mb-6">
-  //       <h2 className="text-3xl font-bold">Patients Data</h2>
-  //       <button
-  //         onClick={handleAdd}
-  //         className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition"
-  //       >
-  //         Add Patient
-  //       </button>
-  //     </div>
-
-  //     {userData.length === 0 ? (
-  //       <p className="text-center text-gray-500">No Data found</p>
-  //     ) : (
-  //       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-  //         {userData.map((user) => (
-  //           <div
-  //             key={user._id}
-  //             className="bg-white shadow-lg border border-gray-200 rounded-lg p-5 hover:shadow-xl transition relative"
-  //           >
-  //             <button
-  //               onClick={() => handleEdit(user)}
-  //               className="absolute top-2 right-12 text-blue-500 hover:text-blue-700"
-  //             >
-  //               <FaEdit  size={20} />
-  //             </button>
-  //             <button onClick={() => handleDelete(user._id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">
-  //               <RiDeleteBin6Fill size={20} />
-  //               </button>
-  //             <p className="text-gray-700"><strong>Full Name:</strong> {user.fullName}</p>
-  //             <p className="text-gray-700"><strong>Phone Number:</strong> {user.phoneNumber}</p>
-  //             <p className="text-gray-700"><strong>Email:</strong> {user.email}</p>
-  //             <p className="text-gray-700"><strong>DOB:</strong> {formatDate(user.dob)}</p>
-  //             <p className="text-gray-700"><strong>Gender:</strong> {user.gender}</p>
-  //             <p className="text-gray-700"><strong>City:</strong> {user.city}</p>
-  //             <p className="text-gray-700"><strong>Insurance:</strong> {user.insurance}</p>
-  //             <p className="text-gray-700"><strong>Therapy:</strong> {user.therapy}</p>
-  //             <p className="text-gray-700"><strong>Therapy Date:</strong> {formatDate(user.therapyDate)}</p>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     )}
-
-  //     {showForm && (
-  //       <UserForm
-  //         initialData={editUser || {}}
-  //         onSave={handleSave}
-  //         onCancel={handleCancel}
-  //       />
-  //     )}
-  //   </div>
-  // );
+  
 };
 
 export default UsersDetail;

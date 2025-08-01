@@ -22,8 +22,9 @@ export const createUser = async (req, res) => {
       dob:         req.body.dob ? new Date(req.body.dob) : undefined,
       gender:      req.body.gender,
       city:        req.body.city,
-      insurance:     req.body.insurance,
+      insurance:   req.body.insurance,
       therapy:     req.body.therapy,
+      comment:     req.body.comment,
       therapyDate: req.body.therapyDate ? new Date(req.body.therapyDate) : undefined
     };
 
@@ -56,6 +57,7 @@ export const updateUser = async (req, res) => {
       city:        req.body.city,
       insurance:     req.body.insurance,
       therapy:     req.body.therapy,
+      comment:     req.body.comment,
       therapyDate: req.body.therapyDate ? new Date(req.body.therapyDate) : undefined
     };
 
