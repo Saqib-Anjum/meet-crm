@@ -3,13 +3,13 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const mongo = "mongodb+srv://stas:St9937d000@developer.katga7s.mongodb.net/?retryWrites=true&w=majority&appName=developer";
-const db = "meet_crm";
+const MONGO_URI = "mongodb+srv://stas:St9937d000@developer.katga7s.mongodb.net/?retryWrites=true&w=majority&appName=developer";
+const DB_NAME = "meet_crm";
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(mongo, {
-      dbName: db,
+    await mongoose.connect(process.env.MONGO_URI, {
+      dbName: process.env.DB_NAME,
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
