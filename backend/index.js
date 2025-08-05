@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 dotenv.config();
-const PORT = 3060 || process.env.PORT
+const PORT = 3060 
 
 app.use('/users', usersRouter);
 app.use('/media', express.static(path.resolve('media')));
